@@ -68,3 +68,16 @@ GridShader createGridShader(std::string vert, std::string frag) {
     shader.id = createShader(vert, frag);
     return shader;
 }
+
+CircleShader createCircleShader(std::string vert, std::string frag) {
+    CircleShader shader;
+    shader.id = createShader(vert, frag);
+    shader.uModel = glGetUniformLocation(shader.id, "model");
+    shader.uView = glGetUniformLocation(shader.id, "view");
+    shader.uProjection = glGetUniformLocation(shader.id, "projection");
+    return shader;
+}
+
+void setUniformMat4(unsigned int uniformId, glm::mat4 *matrix) {
+    glUniformMatrix4fv(uniformId, 1, GL_FALSE, &(*matrix)[0][0]);
+}

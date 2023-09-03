@@ -2,6 +2,11 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
 #include "shader.hpp"
 
 #define Vao unsigned int
@@ -95,12 +100,33 @@ int main() {
         printf("failed to load required extensions\n");
     }
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     setupSquareVao();
+
+    glm::mat4 projection = glm::ortho(
+        (float) (-globalWindow.width / 2),
+        (float) (globalWindow.width / 2),
+        (float) (-globalWindow.height / 2),
+        (float) (globalWindow.height / 2),
+        0.1f,
+        100.0f
+    );
+
+    glm::mat4 view = 
+        glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0), glm::vec3(0, 1, 0));
 
     GridShader gridShader = createGridShader(
         "../shader/gridVert.glsl",
         "../shader/gridFrag.glsl"
     );
+    CircleShader cirlceShader = createCircleShader(
+        "../shader/circleVert.glsl",
+        "../shader/circleFrag.glsl"
+    );
+
+    const float radius = 30;
+    glm::mat4 model = glm::scale(glm::mat4(1), glm::vec3(radius));
 
     float delta = 0.0f;
     float lastFrame = 0.0f;
@@ -119,6 +145,13 @@ int main() {
 
         glUseProgram(gridShader.id);
         glBindVertexArray(squareVao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glUseProgram(cirlceShader.id);
+        glBindVertexArray(squareVao);
+        setUniformMat4(cirlceShader.uModel, &model);
+        setUniformMat4(cirlceShader.uView, &view);
+        setUniformMat4(cirlceShader.uProjection, &projection);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(globalWindow.handle);

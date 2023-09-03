@@ -19,16 +19,28 @@ struct Window {
 
 static Window globalWindow;
 static Vao squareVao;
+static glm::mat4 projection;
 
 static void updateViewport(int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+static void updateProjection() {
+    projection = glm::ortho(
+        (float) (-globalWindow.width / 2),
+        (float) (globalWindow.width / 2),
+        (float) (-globalWindow.height / 2),
+        (float) (globalWindow.height / 2),
+        0.1f,
+        100.0f
+    );
 }
 
 static void frameBufferResizeCallback(GLFWwindow *window, int width, int height) {
     updateViewport(width, height);
     globalWindow.width = width;
     globalWindow.height = height;
-    // camera.setScreenSize((float) width, (float) height);
+    updateProjection();
 }
 
 static void initWindow() {
@@ -102,16 +114,8 @@ int main() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    updateProjection();
     setupSquareVao();
-
-    glm::mat4 projection = glm::ortho(
-        (float) (-globalWindow.width / 2),
-        (float) (globalWindow.width / 2),
-        (float) (-globalWindow.height / 2),
-        (float) (globalWindow.height / 2),
-        0.1f,
-        100.0f
-    );
 
     glm::mat4 view = 
         glm::lookAt(glm::vec3(0, 0, 100), glm::vec3(0), glm::vec3(0, 1, 0));

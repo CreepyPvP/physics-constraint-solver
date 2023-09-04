@@ -7,7 +7,9 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "defines.hpp"
 #include "shader.hpp"
+#include "system_state.hpp"
 
 #define Vao unsigned int
 
@@ -79,31 +81,31 @@ static void setupSquareVao() {
         0, 1, 2,
     };
 
-    glGenVertexArrays(1, &squareVao);
-    glBindVertexArray(squareVao);
+    GL(glGenVertexArrays(1, &squareVao));
+    GL(glBindVertexArray(squareVao));
 
     unsigned int buffers[2];
-    glGenBuffers(2, buffers);
+    GL(glGenBuffers(2, buffers));
     unsigned int vertexBuffer = buffers[0];
     unsigned int indexBuffer = buffers[1];
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer));
+    GL(glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * 8,
         vertices,
         GL_STATIC_DRAW
-    );
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(
+    ));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
+    GL(glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         sizeof(unsigned int) * 6,
         indices,
         GL_STATIC_DRAW
-    );
+    ));
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    GL(glEnableVertexAttribArray(0));
+    GL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 }
 
 int main() {
@@ -112,8 +114,8 @@ int main() {
         printf("failed to load required extensions\n");
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    GL(glEnable(GL_BLEND));
+    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     updateProjection();
     setupSquareVao();
 
@@ -134,7 +136,7 @@ int main() {
 
     float delta = 0.0f;
     float lastFrame = 0.0f;
-    glClearColor(0.1, 0.1, 0.1, 1);
+    GL(glClearColor(0.1, 0.1, 0.1, 1));
 
     while (!glfwWindowShouldClose(globalWindow.handle)) {
         if (glfwGetKey(globalWindow.handle, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -145,18 +147,18 @@ int main() {
         delta = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        GL(glClear(GL_COLOR_BUFFER_BIT));
 
-        glUseProgram(gridShader.id);
-        glBindVertexArray(squareVao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        GL(glUseProgram(gridShader.id));
+        GL(glBindVertexArray(squareVao));
+        GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
-        glUseProgram(cirlceShader.id);
-        glBindVertexArray(squareVao);
+        GL(glUseProgram(cirlceShader.id));
+        GL(glBindVertexArray(squareVao));
         setUniformMat4(cirlceShader.uModel, &model);
         setUniformMat4(cirlceShader.uView, &view);
         setUniformMat4(cirlceShader.uProjection, &projection);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         glfwSwapBuffers(globalWindow.handle);
         glfwPollEvents();

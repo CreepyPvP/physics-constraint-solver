@@ -1,1 +1,1 @@
-vim.keymap.set("n", "ü", "<cmd>tabnew term://cd build && make && ./isometric<CR>");
+vim.keymap.set("n", "<", "<cmd>tabnew term://cd build && make && ./physics<CR>");

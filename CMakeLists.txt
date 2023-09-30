@@ -12,10 +12,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Include debug information
 set(CMAKE_BUILD_TYPE Debug)
 
-# Add all Source Files
-file(GLOB_RECURSE SOURCE_FILES 
-	${CMAKE_SOURCE_DIR}/src/*.cpp
-)
 
 # Add all Header Files
 file(GLOB_RECURSE HEADER_FILES 
@@ -23,18 +19,27 @@ file(GLOB_RECURSE HEADER_FILES
 	${CMAKE_SOURCE_DIR}/src/*.hpp
 )
 
+
+IF (WIN32)
+    # Windows libraries:
+    find_package(OpenGL REQUIRED)
+    set(LIBS glfw opengl32 glad glm)
+
+    file(GLOB_RECURSE SOURCE_FILES 
+        ${CMAKE_SOURCE_DIR}/src/*.cpp
+        # ${CMAKE_SOURCE_DIR}/platform/windows.cpp
+    )
+ELSE()
+    # Linux libraries:
+    set(LIBS glfw X11 glad glm)
+
+    file(GLOB_RECURSE SOURCE_FILES 
+        ${CMAKE_SOURCE_DIR}/src/*.cpp
+        # ${CMAKE_SOURCE_DIR}/platform/linux.cpp
+    )
+ENDIF()
+
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
-
-
-# Find the Required Packages (if Any -> OpenGL/Vulkan or Any)
-# find_package(OpenGL REQUIRED)
-
-
-# Variable for the Libs to add to the Linkers
-# Window libraries:
-set(LIBS glfw opengl32 glad glm)
-# Linux libraries:
-# set(LIBS glfw X11 glad assimp glm)
 
 # Variables for Paths of External Libraries
 set(GLFW_ROOT_DIR external/glfw)

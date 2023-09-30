@@ -11,10 +11,11 @@ struct System {
     float v_y[ENTITY_CAPACITY];
     float a_x[ENTITY_CAPACITY];
     float a_y[ENTITY_CAPACITY];
+    float m[ENTITY_CAPACITY];
 
     unsigned int entityCount;
 
     void init();
-    Entity add(float p_x, float p_y, float v_x, float v_y);
+    Entity add(float posX, float posY, float m, float velX, float velY);
     void tick(float delta);
 };

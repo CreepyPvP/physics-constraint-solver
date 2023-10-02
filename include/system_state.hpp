@@ -1,21 +1,39 @@
 #pragma once
 
-#define ENTITY_CAPACITY 5
+#include "matrix.hpp"
 
-typedef unsigned int Entity;
+typedef int Entity;
+
+struct Constraint {
+    enum Type {
+        UnitCircle
+    };
+
+    Type type;
+
+    union Value {
+        struct {
+            Entity particle;
+            int chunkIndex;
+        } unitCircle;
+    };
+
+    Value value;
+};
 
 struct System {
-    float p_x[ENTITY_CAPACITY];
-    float p_y[ENTITY_CAPACITY];
-    float v_x[ENTITY_CAPACITY];
-    float v_y[ENTITY_CAPACITY];
-    float a_x[ENTITY_CAPACITY];
-    float a_y[ENTITY_CAPACITY];
-    float m[ENTITY_CAPACITY];
+    SparseMatrix gradients;
+    Vector weights;
+    Vector pos;
+    Vector vel;
+    Vector acc;
+    Vector forces;
+    Vector tmp;
 
-    unsigned int entityCount;
+    Constraint* constraints;
+    int constraintCount;
+    int constraintCapacity;
 
     void init();
-    Entity add(float posX, float posY, float m, float velX, float velY);
     void tick(float delta);
 };

@@ -50,6 +50,7 @@ static void initWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     globalWindow.width = 1280;
     globalWindow.height = 720;
@@ -115,6 +116,7 @@ int main() {
     }
 
     GL(glEnable(GL_BLEND));
+    GL(glEnable(GL_MULTISAMPLE));
     GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     updateProjection();
     setupSquareVao();

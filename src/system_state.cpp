@@ -1,45 +1,53 @@
 #include "system_state.hpp"
-
 #include <assert.h>
+#include <stdlib.h>
 
 void System::init() {
-    entityCount = 0;
-}
+    int entityCount = 8;
+    constraintCapacity = 8;
+    constraints = (Constraint*) malloc(sizeof(Constraint) * constraintCapacity);
 
-Entity System::add(float posX, float posY, float mass, float velX, float velY) {
-    assert(entityCount < ENTITY_CAPACITY);
+    weights.alloc(entityCount * 2);
+    pos.alloc(entityCount * 2);
+    vel.alloc(entityCount * 2);
+    acc.alloc(entityCount * 2);
+    forces.alloc(entityCount * 2);
+    tmp.alloc(entityCount * 2);
+    gradients.alloc(constraintCapacity);
 
-    Entity entity = entityCount++;
-    p_x[entity] = posX;
-    p_y[entity] = posY;
-    v_x[entity] = velX;
-    v_y[entity] = velY;
-    a_x[entity] = 0;
-    a_y[entity] = 0;
-    m[entity] = mass;
-    return entity;
+    for (int i = 0; i < forces.length; i += 2) {
+        // gravity
+        forces.values[i] = 0;
+        forces.values[i + 1] = -1;
+
+        pos.values[i] = 0;
+        pos.values[i + 1] = 1;
+        vel.values[i] = 0;
+        vel.values[i + 1] = 0;
+        acc.values[i] = 0;
+        acc.values[i + 1] = 0;
+    }
+
+    Constraint test;
+    test.type = Constraint::UnitCircle;
+    test.value.unitCircle.particle = 0;
+    // 0, 0 => particle 0, constraint 0
+    test.value.unitCircle.chunkIndex = gradients.createChunk(0, 0);
+    constraints[0] = test;
+    constraintCount = 1;
 }
 
 void System::tick(float delta) {
-    for (unsigned int i = 0; i < entityCount; ++i) {
-        float gravityX = 0; 
-        float gravityY = -0.5; 
+    for (int i = 0; i < constraintCount; ++i) {
+        Constraint constraint = constraints[i];
 
-        float a = gravityX * p_x[i] + gravityY * p_y[i]; 
-        float b = m[i] * (v_x[i] * v_x[i] + v_y[i] * v_y[i]);
-        float c = p_x[i] * p_x[i] + p_y[i] * p_y[i];
-        float lambda = (-a - b) / c;
-
-        a_x[i] = gravityX + lambda * p_x[i];
-        a_y[i] = gravityY + lambda * p_y[i];
+        if (constraint.type == Constraint::UnitCircle) {
+            MatrixChunk chunk = 
+                gradients.chunks[constraint.value.unitCircle.chunkIndex];
+            chunk.a = pos.values[constraint.value.unitCircle.particle];
+            chunk.b = pos.values[constraint.value.unitCircle.particle + 1];
+        }
     }
 
-    for (unsigned int i = 0; i < entityCount; ++i) {
-        v_x[i] += delta * a_x[i] * m[i];
-        v_y[i] += delta * a_y[i] * m[i];
-    }
-    for (unsigned int i = 0; i < entityCount; ++i) {
-        p_x[i] += delta * v_x[i];
-        p_y[i] += delta * v_y[i];
-    }
-}
+    gradients.mul(vel, tmp);
+};

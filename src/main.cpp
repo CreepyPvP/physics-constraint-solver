@@ -8,6 +8,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "defines.hpp"
+#include "glm/ext/vector_float2.hpp"
 #include "shader.hpp"
 #include "system_state.hpp"
 
@@ -136,7 +137,7 @@ int main() {
     System system;
     system.init();
 
-    const float radius = 30;
+    const float radius = 15;
     glm::mat4 nonTranslatedModel = glm::scale(glm::mat4(1), glm::vec3(radius));
 
     float delta = 0.0f;
@@ -153,13 +154,15 @@ int main() {
         lastFrame = currentFrame;
         
         system.tick(delta);
-        glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 5, system.pos.values[1] * 5, 0));
+        glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 10, system.pos.values[1] * 10, 0));
         printf("distance: %f\n", system.pos.values[0] * system.pos.values[0] + system.pos.values[1] * system.pos.values[1]);
 
         GL(glClear(GL_COLOR_BUFFER_BIT));
 
         GL(glUseProgram(gridShader.id));
         GL(glBindVertexArray(squareVao));
+        glm::vec2 screenDimensions(globalWindow.width, globalWindow.height);
+        setUniformVec2(gridShader.uScreenDimensions, &screenDimensions);
         GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
         GL(glUseProgram(cirlceShader.id));

@@ -66,6 +66,7 @@ static Program createShader(std::string vFile, std::string fFile) {
 GridShader createGridShader(std::string vert, std::string frag) {
     GridShader shader;
     shader.id = createShader(vert, frag);
+    shader.uScreenDimensions = glGetUniformLocation(shader.id, "screenDimensions");
     return shader;
 }
 
@@ -80,4 +81,8 @@ CircleShader createCircleShader(std::string vert, std::string frag) {
 
 void setUniformMat4(unsigned int uniformId, glm::mat4 *matrix) {
     glUniformMatrix4fv(uniformId, 1, GL_FALSE, &(*matrix)[0][0]);
+}
+
+void setUniformVec2(unsigned int uniformId, glm::vec2 *vec) {
+    glUniform2fv(uniformId, 1, &(*vec)[0]);
 }

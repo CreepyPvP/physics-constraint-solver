@@ -1,5 +1,7 @@
 #version 440
 
+in vec2 pos;
+
 out vec4 out_Color;
 
 void main() {
@@ -8,11 +10,16 @@ void main() {
     const vec4 lineColor = vec4(0.3, 0.3, 0.3, 1);
     const float lineSpacing = 150.0f;
     const float lineThickness = 2;
-    if (mod(gl_FragCoord.x, lineSpacing) < lineThickness || 
-        mod(gl_FragCoord.y, lineSpacing) < lineThickness 
+
+    if (mod(pos.x, lineSpacing) < lineThickness || 
+        mod(pos.y, lineSpacing) < lineThickness 
     ) {
         out_Color = lineColor;
     } else {
         out_Color = background;
+    }
+
+    if (pos.x * pos.x + pos.y * pos.y < 20*20) {
+        out_Color = vec4(0.5, 0.5, 0.5, 1);
     }
 }

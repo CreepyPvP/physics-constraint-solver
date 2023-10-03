@@ -1,5 +1,6 @@
 #include "system_state.hpp"
 #include <assert.h>
+#include <cstdio>
 #include <stdlib.h>
 
 void System::init() {
@@ -12,7 +13,9 @@ void System::init() {
     vel.alloc(entityCount * 2);
     acc.alloc(entityCount * 2);
     forces.alloc(entityCount * 2);
-    right.alloc(constraintCount);
+    correctionForces.alloc(entityCount * 2);
+    lambda.alloc(entityCount * 2);
+    right.alloc(constraintCapacity);
     left.alloc(entityCount * 2);
     wq.alloc(entityCount * 2);
     gradients.alloc(constraintCapacity);
@@ -23,8 +26,8 @@ void System::init() {
         forces.values[i] = 0;
         forces.values[i + 1] = -1;
 
-        pos.values[i] = 0;
-        pos.values[i + 1] = 1;
+        pos.values[i] = 1;
+        pos.values[i + 1] = 0;
         vel.values[i] = 0;
         vel.values[i + 1] = 0;
         acc.values[i] = 0;
@@ -75,5 +78,30 @@ void System::tick(float delta) {
     gradients.transposeCollapse(left, MATRIX_OP_ZERO);
     for (int i = 0; i < left.length; ++i) {
         left.values[i] /= weights.values[i];
+    }
+
+    // this is only for debugging purposes.
+    // construct coefficient matrix instead, then use sle solver
+    float value;
+    Vector res;
+    res.length = 1;
+    res.values = &value;
+    gradients.mul(left, res, MATRIX_OP_ZERO);
+    float lambdaVal = right.values[0] / value;
+    lambda.values[0] = lambdaVal;
+    lambda.values[1] = lambdaVal;
+    
+    gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO);
+
+    for (int i = 0; i < pos.length; i += 2) {
+        acc.values[i] = 
+            (forces.values[i] + correctionForces.values[i]) / weights.values[i];
+        acc.values[i + 1] = 
+            (forces.values[i + 1] + correctionForces.values[i + 1]) / weights.values[i];
+
+        vel.values[i] += delta * acc.values[i];
+        vel.values[i + 1] += delta * acc.values[i + 1];
+        pos.values[i] += delta * vel.values[i];
+        pos.values[i + 1] += delta * vel.values[i + 1];
     }
 };

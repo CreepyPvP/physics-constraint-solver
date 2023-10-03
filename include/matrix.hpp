@@ -32,6 +32,7 @@ struct SparseMatrix {
     int createChunk(int x, int y);
 
     void mul(Vector v, Vector dest, unsigned char flags);
+    void mulTranspose(Vector v, Vector dest, unsigned char flags);
     // multiply the transpose matrix with an identity vector
     void transposeCollapse(Vector dest, unsigned char flags);
 };

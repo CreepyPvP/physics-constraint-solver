@@ -135,7 +135,6 @@ int main() {
 
     System system;
     system.init();
-    Entity circle = system.add(1, 0, 1, 0, 0);
 
     const float radius = 30;
     glm::mat4 nonTranslatedModel = glm::scale(glm::mat4(1), glm::vec3(radius));
@@ -154,7 +153,7 @@ int main() {
         lastFrame = currentFrame;
         
         system.tick(delta);
-        glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.p_x[circle] * 5, system.p_y[circle] * 5, 0));
+        glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 5, system.pos.values[1] * 5, 0));
 
         GL(glClear(GL_COLOR_BUFFER_BIT));
 

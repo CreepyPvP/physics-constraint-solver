@@ -37,6 +37,8 @@ struct System {
     Vector wq;
     Vector right;
     Vector left;
+    Vector correctionForces;
+    Vector lambda;
 
     Constraint* constraints;
     int constraintCount;

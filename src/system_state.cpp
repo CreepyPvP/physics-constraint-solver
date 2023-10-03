@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 void System::init() {
-    int entityCount = 8;
-    constraintCapacity = 8;
+    int entityCount = 1;
+    constraintCapacity = 1;
     constraints = (Constraint*) malloc(sizeof(Constraint) * constraintCapacity);
 
     weights.alloc(entityCount * 2);
@@ -12,8 +12,11 @@ void System::init() {
     vel.alloc(entityCount * 2);
     acc.alloc(entityCount * 2);
     forces.alloc(entityCount * 2);
-    tmp.alloc(entityCount * 2);
+    right.alloc(constraintCount);
+    left.alloc(entityCount * 2);
+    wq.alloc(entityCount * 2);
     gradients.alloc(constraintCapacity);
+    timeGradients.alloc(constraintCapacity);
 
     for (int i = 0; i < forces.length; i += 2) {
         // gravity
@@ -26,13 +29,16 @@ void System::init() {
         vel.values[i + 1] = 0;
         acc.values[i] = 0;
         acc.values[i + 1] = 0;
+        weights.values[i] = 1;
+        weights.values[i + 1] = 1;
     }
 
     Constraint test;
     test.type = Constraint::UnitCircle;
     test.value.unitCircle.particle = 0;
     // 0, 0 => particle 0, constraint 0
-    test.value.unitCircle.chunkIndex = gradients.createChunk(0, 0);
+    test.value.unitCircle.jIndex = gradients.createChunk(0, 0);
+    test.value.unitCircle.jtIndex = timeGradients.createChunk(0, 0);
     constraints[0] = test;
     constraintCount = 1;
 }
@@ -42,12 +48,32 @@ void System::tick(float delta) {
         Constraint constraint = constraints[i];
 
         if (constraint.type == Constraint::UnitCircle) {
-            MatrixChunk chunk = 
-                gradients.chunks[constraint.value.unitCircle.chunkIndex];
-            chunk.a = pos.values[constraint.value.unitCircle.particle];
-            chunk.b = pos.values[constraint.value.unitCircle.particle + 1];
+            int jChunkIndex = constraint.value.unitCircle.jIndex;
+            int jtChunkIndex = constraint.value.unitCircle.jtIndex;
+            int particle = constraint.value.unitCircle.particle;
+
+            MatrixChunk jChunk = gradients.chunks[jChunkIndex];
+            jChunk.a = pos.values[particle];
+            jChunk.b = pos.values[particle + 1];
+            gradients.chunks[jChunkIndex] = jChunk;
+
+            MatrixChunk jtChunk = timeGradients.chunks[jtChunkIndex];
+            jtChunk.a = vel.values[particle];
+            jtChunk.b = vel.values[particle + 1];
+            timeGradients.chunks[jtChunkIndex] = jtChunk;
         }
     }
 
-    gradients.mul(vel, tmp);
+    for (int i = 0; i < wq.length; ++i) {
+        wq.values[i] = forces.values[i] / weights.values[i];
+    }
+
+    // right hand side
+    gradients.mul(wq, right, MATRIX_OP_ZERO | MATRIX_OP_NEGATIVE);
+    timeGradients.mul(vel, right, MATRIX_OP_NEGATIVE);
+
+    gradients.transposeCollapse(left, MATRIX_OP_ZERO);
+    for (int i = 0; i < left.length; ++i) {
+        left.values[i] /= weights.values[i];
+    }
 };

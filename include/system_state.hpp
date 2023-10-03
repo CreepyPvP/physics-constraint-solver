@@ -14,7 +14,8 @@ struct Constraint {
     union Value {
         struct {
             Entity particle;
-            int chunkIndex;
+            int jIndex;
+            int jtIndex;
         } unitCircle;
     };
 
@@ -22,13 +23,20 @@ struct Constraint {
 };
 
 struct System {
+    // J
     SparseMatrix gradients;
+    // J wrt t
+    SparseMatrix timeGradients;
     Vector weights;
     Vector pos;
     Vector vel;
     Vector acc;
     Vector forces;
-    Vector tmp;
+
+    // tmp vectors
+    Vector wq;
+    Vector right;
+    Vector left;
 
     Constraint* constraints;
     int constraintCount;

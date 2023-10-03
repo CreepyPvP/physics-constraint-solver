@@ -1,3 +1,6 @@
+#define MATRIX_OP_ZERO 1 << 0
+#define MATRIX_OP_NEGATIVE 1 << 1
+
 // a 2x1 matrix slice
 // here example with x = 1, y = 2
 //
@@ -26,7 +29,10 @@ struct SparseMatrix {
     int chunkCount;
 
     void alloc(int length);
-    void mul(Vector v, Vector dest);
     int createChunk(int x, int y);
+
+    void mul(Vector v, Vector dest, unsigned char flags);
+    // multiply the transpose matrix with an identity vector
+    void transposeCollapse(Vector dest, unsigned char flags);
 };
 

@@ -154,6 +154,7 @@ int main() {
         
         system.tick(delta);
         glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 5, system.pos.values[1] * 5, 0));
+        printf("distance: %f\n", system.pos.values[0] * system.pos.values[0] + system.pos.values[1] * system.pos.values[1]);
 
         GL(glClear(GL_COLOR_BUFFER_BIT));
 

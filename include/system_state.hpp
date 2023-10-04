@@ -38,9 +38,11 @@ struct System {
     Vector right;
     Vector left;
     Vector correctionForces;
-    Vector lambda;
     // C
     Vector totalEnergy;
+
+    Vector lambda;
+    float* sleSolverBuffer;
 
     Constraint* constraints;
     int constraintCount;

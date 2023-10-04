@@ -1,4 +1,5 @@
 #include "system_state.hpp"
+#include "sle_solver.hpp"
 #include <assert.h>
 #include <cstdio>
 #include <stdlib.h>
@@ -14,13 +15,15 @@ void System::init() {
     acc.alloc(entityCount * 2);
     forces.alloc(entityCount * 2);
     correctionForces.alloc(entityCount * 2);
-    lambda.alloc(entityCount * 2);
     left.alloc(entityCount * 2);
     wq.alloc(entityCount * 2);
     right.alloc(constraintCapacity);
     totalEnergy.alloc(constraintCapacity);
     gradients.alloc(constraintCapacity);
     timeGradients.alloc(constraintCapacity);
+
+    lambda.alloc(entityCount);
+    sleSolverBuffer = (float*) malloc(sizeof(float) * entityCount * constraintCapacity);
 
     for (int i = 0; i < forces.length; i += 2) {
         // gravity
@@ -93,16 +96,11 @@ void System::tick(float delta) {
 
     // this is only for debugging purposes.
     // construct coefficient matrix instead, then use sle solver
-    float value;
-    Vector res;
-    res.length = 1;
-    res.values = &value;
-    gradients.mul(left, res, MATRIX_OP_ZERO);
-    float lambdaVal = right.values[0] / value;
-    lambda.values[0] = lambdaVal;
-    lambda.values[1] = lambdaVal;
+    int entityCount = 1;
+    gradients.toCoefficientMatrix(left, entityCount, constraintCapacity, sleSolverBuffer);
+    sleSolve(sleSolverBuffer, entityCount, constraintCapacity, right.values, lambda.values);
     
-    gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO);
+    gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO | MATRIX_OP_HALF_INPUT);
 
     for (int i = 0; i < pos.length; i += 2) {
         acc.values[i] = 

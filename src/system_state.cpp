@@ -15,9 +15,10 @@ void System::init() {
     forces.alloc(entityCount * 2);
     correctionForces.alloc(entityCount * 2);
     lambda.alloc(entityCount * 2);
-    right.alloc(constraintCapacity);
     left.alloc(entityCount * 2);
     wq.alloc(entityCount * 2);
+    right.alloc(constraintCapacity);
+    totalEnergy.alloc(constraintCapacity);
     gradients.alloc(constraintCapacity);
     timeGradients.alloc(constraintCapacity);
 
@@ -55,15 +56,21 @@ void System::tick(float delta) {
             int jtChunkIndex = constraint.value.unitCircle.jtIndex;
             int particle = constraint.value.unitCircle.particle;
 
+            float x = pos.values[particle];
+            float y = pos.values[particle + 1];
+
             MatrixChunk jChunk = gradients.chunks[jChunkIndex];
-            jChunk.a = pos.values[particle];
-            jChunk.b = pos.values[particle + 1];
+            jChunk.a = x;
+            jChunk.b = y;
             gradients.chunks[jChunkIndex] = jChunk;
 
             MatrixChunk jtChunk = timeGradients.chunks[jtChunkIndex];
             jtChunk.a = vel.values[particle];
             jtChunk.b = vel.values[particle + 1];
             timeGradients.chunks[jtChunkIndex] = jtChunk;
+
+            // used for correction term and monitoring
+            totalEnergy.values[i] = 0.5 * (x * x + y * y - 1);
         }
     }
 
@@ -74,6 +81,10 @@ void System::tick(float delta) {
     // right hand side
     gradients.mul(wq, right, MATRIX_OP_ZERO | MATRIX_OP_NEGATIVE);
     timeGradients.mul(vel, right, MATRIX_OP_NEGATIVE);
+    gradients.mul(vel, right, MATRIX_OP_NEGATIVE);
+    for (int i = 0; i < right.length; ++i) {
+        right.values[i] -= totalEnergy.values[i];
+    }
 
     gradients.transposeCollapse(left, MATRIX_OP_ZERO);
     for (int i = 0; i < left.length; ++i) {

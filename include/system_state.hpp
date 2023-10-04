@@ -39,6 +39,8 @@ struct System {
     Vector left;
     Vector correctionForces;
     Vector lambda;
+    // C
+    Vector totalEnergy;
 
     Constraint* constraints;
     int constraintCount;

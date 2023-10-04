@@ -33,7 +33,7 @@ void swap_row(float* mat, int i, int j, int width, int height, float *results) {
 }
  
 int forwardElim(float* mat, int width, int height) {
-    for (int k=0; k < width; ++k) {
+    for (int k = 0; k < width; ++k) {
         // Initialize maximum value and index for pivot
         int i_max = k;
         int v_max = mat[k + i_max * width];

@@ -22,7 +22,7 @@ void System::init() {
     gradients.alloc(constraintCapacity);
     timeGradients.alloc(constraintCapacity);
 
-    lambda.alloc(entityCount);
+    lambda.alloc(constraintCapacity);
     sleSolverBuffer = (float*) malloc(sizeof(float) * entityCount * constraintCapacity);
 
     for (int i = 0; i < forces.length; i += 2) {

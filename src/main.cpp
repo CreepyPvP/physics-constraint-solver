@@ -154,7 +154,8 @@ int main() {
         lastFrame = currentFrame;
         
         system.tick(delta);
-        glm::mat4 model = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 10, system.pos.values[1] * 10, 0));
+        glm::mat4 model0 = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[0] * 10, system.pos.values[1] * 10, 0));
+        glm::mat4 model1 = glm::translate(nonTranslatedModel, glm::vec3(system.pos.values[2] * 10, system.pos.values[3] * 10, 0));
         printf("distance: %f\n", system.pos.values[0] * system.pos.values[0] + system.pos.values[1] * system.pos.values[1]);
 
         GL(glClear(GL_COLOR_BUFFER_BIT));
@@ -167,7 +168,14 @@ int main() {
 
         GL(glUseProgram(cirlceShader.id));
         GL(glBindVertexArray(squareVao));
-        setUniformMat4(cirlceShader.uModel, &model);
+        setUniformMat4(cirlceShader.uModel, &model0);
+        setUniformMat4(cirlceShader.uView, &view);
+        setUniformMat4(cirlceShader.uProjection, &projection);
+        GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+
+        GL(glUseProgram(cirlceShader.id));
+        GL(glBindVertexArray(squareVao));
+        setUniformMat4(cirlceShader.uModel, &model1);
         setUniformMat4(cirlceShader.uView, &view);
         setUniformMat4(cirlceShader.uProjection, &projection);
         GL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));

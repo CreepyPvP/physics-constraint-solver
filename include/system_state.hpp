@@ -6,7 +6,8 @@ typedef int Entity;
 
 struct Constraint {
     enum Type {
-        UnitCircle
+        UnitCircle,
+        Anchor
     };
 
     Type type;
@@ -17,6 +18,16 @@ struct Constraint {
             int jIndex;
             int jtIndex;
         } unitCircle;
+
+        struct {
+            Entity particle;
+            Entity anchor;
+
+            int jIndex;
+            int jtIndex;
+            int ajIndex;
+            int ajtIndex;
+        } anchor;
     };
 
     Value value;

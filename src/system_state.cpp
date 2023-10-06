@@ -100,7 +100,7 @@ void System::tick(float delta) {
         sleBuffer2
     );
     // correct for mass values here
-    sleSolve(sleSolverBuffer, entityCount * 2, constraintCount, right.values, lambda.values);
+    sleSolve(sleSolverBuffer, constraintCount, right.values, lambda.values);
     
     gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO);
 

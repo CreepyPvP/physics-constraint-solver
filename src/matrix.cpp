@@ -66,25 +66,9 @@ void SparseMatrix::transposeCollapse(Vector dest, unsigned char flags) {
     }
 }
 
-void SparseMatrix::toCoefficientMatrix(Vector v, int width, int height, float* dest) {
-    for (int i = 0; i < width * height; ++i) {
-        *dest = 0;
-    }
-
-    for (int i = 0; i < chunkCount; ++i) {
-        MatrixChunk chunk = chunks[i];
-        float value = chunk.a * v.values[chunk.x] + chunk.b * v.values[chunk.x + 1];
-
-        int targetX = chunk.x >> 1;
-        int targetY = chunk.y;
-
-        dest[targetX + targetY * width] = value;
-    }
-}
-
 // buffer1 and buffer2 have length width
 // this is fucking retarded
-void SparseMatrix::toCoeffiecientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2) {
+void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2) {
     for (int i = 0; i < equationCount * equationCount; ++i) {
         dest[i] = 0;
     }

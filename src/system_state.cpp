@@ -24,6 +24,8 @@ void System::init() {
 
     lambda.alloc(constraintCapacity);
     sleSolverBuffer = (float*) malloc(sizeof(float) * entityCount * constraintCapacity);
+    sleBuffer1 = (float*) malloc(sizeof(float) * entityCount);
+    sleBuffer2 = (float*) malloc(sizeof(float) * entityCount);
 
     for (int i = 0; i < forces.length; i += 2) {
         // gravity
@@ -97,10 +99,11 @@ void System::tick(float delta) {
     // this is only for debugging purposes.
     // construct coefficient matrix instead, then use sle solver
     int entityCount = 1;
-    gradients.toCoefficientMatrix(left, entityCount, constraintCapacity, sleSolverBuffer);
+    gradients.toCoefficientMatrix(constraintCount, entityCount, sleSolverBuffer, sleBuffer1, sleBuffer2);
+    // correct for mass values here
     sleSolve(sleSolverBuffer, entityCount, constraintCapacity, right.values, lambda.values);
     
-    gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO | MATRIX_OP_HALF_INPUT);
+    gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO);
 
     for (int i = 0; i < pos.length; i += 2) {
         acc.values[i] = 

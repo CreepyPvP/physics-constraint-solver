@@ -43,6 +43,8 @@ struct System {
 
     Vector lambda;
     float* sleSolverBuffer;
+    float* sleBuffer1;
+    float* sleBuffer2;
 
     Constraint* constraints;
     int constraintCount;

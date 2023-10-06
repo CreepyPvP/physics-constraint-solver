@@ -34,7 +34,6 @@ struct SparseMatrix {
     void mul(Vector v, Vector dest, unsigned char flags);
     void mulTranspose(Vector v, Vector dest, unsigned char flags);
     // multiply the transpose matrix with an identity vector
-    void transposeCollapse(Vector dest, unsigned char flags);
     void toCoefficientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2);
 };
 

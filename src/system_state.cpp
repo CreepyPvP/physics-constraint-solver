@@ -91,17 +91,16 @@ void System::tick(float delta) {
         right.values[i] -= totalEnergy.values[i];
     }
 
-    gradients.transposeCollapse(left, MATRIX_OP_ZERO);
-    for (int i = 0; i < left.length; ++i) {
-        left.values[i] /= weights.values[i];
-    }
-
-    // this is only for debugging purposes.
-    // construct coefficient matrix instead, then use sle solver
     int entityCount = 1;
-    gradients.toCoefficientMatrix(constraintCount, entityCount, sleSolverBuffer, sleBuffer1, sleBuffer2);
+    gradients.toCoefficientMatrix(
+        constraintCount, 
+        entityCount * 2,
+        sleSolverBuffer, 
+        sleBuffer1, 
+        sleBuffer2
+    );
     // correct for mass values here
-    sleSolve(sleSolverBuffer, entityCount, constraintCapacity, right.values, lambda.values);
+    sleSolve(sleSolverBuffer, entityCount * 2, constraintCount, right.values, lambda.values);
     
     gradients.mulTranspose(lambda, correctionForces, MATRIX_OP_ZERO);
 

@@ -1,4 +1,5 @@
 #include "matrix.hpp"
+#include <cstdio>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -52,27 +53,9 @@ int SparseMatrix::createChunk(int x, int y) {
     return chunkCount++;
 }
 
-void SparseMatrix::transposeCollapse(Vector dest, unsigned char flags) {
-    if (flags & MATRIX_OP_ZERO) {
-        for (int i = 0; i < dest.length; ++i) {
-            dest.values[i] = 0;
-        }
-    }
-
-    for (int i = 0; i < chunkCount; ++i) {
-        MatrixChunk chunk = chunks[i];
-        dest.values[chunk.x] += chunk.a;
-        dest.values[chunk.x + 1] += chunk.b;
-    }
-}
-
 // buffer1 and buffer2 have length width
 // this is fucking retarded
 void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2) {
-    for (int i = 0; i < equationCount * equationCount; ++i) {
-        dest[i] = 0;
-    }
-
     for (int y = 0; y < equationCount; ++y) {
         for (int i = 0; i < width; i++) {
             buffer1[i] = 0;
@@ -86,7 +69,7 @@ void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest
         }
 
         for (int x = 0; x < equationCount; ++x) {
-            for (int i = 0; i < width; i++) {
+            for (int i = 0; i < width; ++i) {
                 buffer2[i] = 0;
             }
             for(int i = 0; i < chunkCount; ++i) {

@@ -11,13 +11,13 @@
 struct MatrixChunk {
     int x;
     int y;
-    float a;
-    float b;
+    double a;
+    double b;
     int owner;
 };
 
 struct Vector {
-    float* values;
+    double* values;
     int length;
 
     void alloc(int length);
@@ -34,6 +34,6 @@ struct SparseMatrix {
     void mul(Vector v, Vector dest, unsigned char flags);
     void mulTranspose(Vector v, Vector dest, unsigned char flags);
     // multiply the transpose matrix with an identity vector
-    void toCoefficientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2);
+    void toCoefficientMatrix(int equationCount, int width, double* dest, double* buffer1, double* buffer2);
 };
 

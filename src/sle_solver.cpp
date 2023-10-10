@@ -2,7 +2,7 @@
 #include <sle_solver.hpp>
 #include <stdio.h>
 
-static float abs(float a) {
+static double abs(double a) {
     if (a > 0) {
         return a;
     }
@@ -10,25 +10,25 @@ static float abs(float a) {
 }
 
 // swap row j with row k
-static void swapRow(float* input, float* results, int n, int j, int k) {
+static void swapRow(double* input, double* results, int n, int j, int k) {
     for (int i = 0; i < n; ++i) {
-        float tmp = input[i + j * n];
+        double tmp = input[i + j * n];
         input[i + j * n] = input[i + k * n];
         input[i + k * n] = tmp;
 
     }
-    float tmp = results[j];
+    double tmp = results[j];
     results[j] = results[k];
     results[k] = tmp;
 }
 
-static int forwardElim(float* input, float* results, int n) {
+static int forwardElim(double* input, double* results, int n) {
     for (int k = 0; k < n; ++k) {
         int iMax = k;
-        float vMax = input[k + n * k];
+        double vMax = input[k + n * k];
 
         for (int i = k + 1; i < n; ++i) {
-            float value = input[k + i * n];
+            double value = input[k + i * n];
             if (abs(value) > abs(vMax)) {
                 vMax = value;
                 iMax = i;
@@ -45,7 +45,7 @@ static int forwardElim(float* input, float* results, int n) {
         }
 
         for (int i = k + 1; i < n; ++i) {
-            float f = input[k + i * n] / vMax;
+            double f = input[k + i * n] / vMax;
 
             input[k + i * n] = 0;
             for (int j = k + 1; j < n; ++j) {
@@ -58,9 +58,9 @@ static int forwardElim(float* input, float* results, int n) {
     return -1;
 }
 
-static void backsub(float* input, float* results, float* dest, int n) {
+static void backsub(double* input, double* results, double* dest, int n) {
     for (int i = n - 1; i >= 0; --i) {
-        float value = results[i] / input[i + i * n];
+        double value = results[i] / input[i + i * n];
         dest[i] = value;
 
         for (int j = i - 1; j >= 0; --j) {
@@ -69,7 +69,7 @@ static void backsub(float* input, float* results, float* dest, int n) {
     }
 }
 
-void sleSolve(float *input, int n, float* results, float *dest) {
+void sleSolve(double *input, int n, double* results, double *dest) {
     int flag = forwardElim(input, results, n);
     assert(flag == -1);
     backsub(input, results, dest, n);

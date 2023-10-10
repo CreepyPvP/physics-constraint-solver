@@ -55,7 +55,7 @@ int SparseMatrix::createChunk(int x, int y) {
 
 // buffer1 and buffer2 have length width
 // this is fucking retarded
-void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest, float* buffer1, float* buffer2) {
+void SparseMatrix::toCoefficientMatrix(int equationCount, int width, double* dest, double* buffer1, double* buffer2) {
     for (int y = 0; y < equationCount; ++y) {
         for (int i = 0; i < width; i++) {
             buffer1[i] = 0;
@@ -80,7 +80,7 @@ void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest
                 }
             }
 
-            float accumulator = 0;
+            double accumulator = 0;
             for (int i = 0; i < width; ++i) {
                 accumulator += buffer1[i] * buffer2[i];
             }
@@ -92,5 +92,5 @@ void SparseMatrix::toCoefficientMatrix(int equationCount, int width, float* dest
 
 void Vector::alloc(int length) {
     this->length = length;
-    this->values = (float *) malloc(length * sizeof(float));
+    this->values = (double *) malloc(length * sizeof(double));
 }

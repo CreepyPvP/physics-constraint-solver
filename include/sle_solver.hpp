@@ -1,4 +1,4 @@
 #pragma once
 
 // equationCount => height, variableCount => width
-void sleSolve(float* input,  int n, float* results, float* dest);
+void sleSolve(double* input,  int n, double* results, double* dest);

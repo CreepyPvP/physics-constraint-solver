@@ -68,6 +68,7 @@ static void initWindow() {
     }
     glfwSetFramebufferSizeCallback(globalWindow.handle, frameBufferResizeCallback);
     glfwMakeContextCurrent(globalWindow.handle);
+    glfwSwapInterval(0);
 }
 
 static void setupSquareVao() {
@@ -140,8 +141,8 @@ int main() {
     const float radius = 15;
     glm::mat4 nonTranslatedModel = glm::scale(glm::mat4(1), glm::vec3(radius));
 
-    float delta = 0.0f;
-    float lastFrame = 0.0f;
+    double delta = 0.0f;
+    double lastFrame = 0.0f;
     GL(glClearColor(0.1, 0.1, 0.1, 1));
 
     while (!glfwWindowShouldClose(globalWindow.handle)) {

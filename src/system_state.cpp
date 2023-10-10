@@ -2,11 +2,14 @@
 #include "sle_solver.hpp"
 #include <assert.h>
 #include <cstdio>
+#include <stdio.h>
 #include <stdlib.h>
+
+// #define DEBUG
 
 void System::init() {
     int entityCount = 2;
-    constraintCapacity = 2;
+    constraintCapacity = 3;
     constraints = (Constraint*) malloc(sizeof(Constraint) * constraintCapacity);
 
     weights.alloc(entityCount * 2);
@@ -23,9 +26,9 @@ void System::init() {
     timeGradients.alloc(constraintCapacity * 2);
 
     lambda.alloc(constraintCapacity);
-    sleSolverBuffer = (float*) malloc(sizeof(float) * entityCount * constraintCapacity);
-    sleBuffer1 = (float*) malloc(sizeof(float) * entityCount);
-    sleBuffer2 = (float*) malloc(sizeof(float) * entityCount);
+    sleSolverBuffer = (double*) malloc(sizeof(double) * entityCount * constraintCapacity);
+    sleBuffer1 = (double*) malloc(sizeof(double) * entityCount);
+    sleBuffer2 = (double*) malloc(sizeof(double) * entityCount);
 
     for (int i = 0; i < forces.length; i += 2) {
         // gravity
@@ -64,10 +67,29 @@ void System::init() {
     c1.value.anchor.ajtIndex = timeGradients.createChunk(0, 1);
     constraints[1] = c1;
 
+    // equality
+    // Constraint c1;
+    // c1.type = Constraint::Equality;
+    // c1.value.equality.a = 2;
+    // c1.value.equality.b = 0;
+    // c1.value.equality.ajIndex = gradients.createChunk(2, 1);
+    // c1.value.equality.ajtIndex = timeGradients.createChunk(2, 1);
+    // c1.value.equality.bjIndex = gradients.createChunk(0, 1);
+    // c1.value.equality.bjtIndex = timeGradients.createChunk(0, 1);
+    // constraints[1] = c1;
+
+    // Constraint c1;
+    // c1.type = Constraint::UnitCircle;
+    // c1.value.unitCircle.particle = 2;
+    // // 0, 0 => particle 0, constraint 0
+    // c1.value.unitCircle.jIndex = gradients.createChunk(2, 1);
+    // c1.value.unitCircle.jtIndex = timeGradients.createChunk(2, 1);
+    // constraints[1] = c1;
+
     constraintCount = 2;
 }
 
-void System::tick(float delta) {
+void System::tick(double delta) {
     for (int i = 0; i < constraintCount; ++i) {
         Constraint constraint = constraints[i];
 
@@ -76,8 +98,8 @@ void System::tick(float delta) {
             int jtChunkIndex = constraint.value.unitCircle.jtIndex;
             int particle = constraint.value.unitCircle.particle;
 
-            float x = pos.values[particle];
-            float y = pos.values[particle + 1];
+            double x = pos.values[particle];
+            double y = pos.values[particle + 1];
 
             MatrixChunk jChunk = gradients.chunks[jChunkIndex];
             jChunk.a = x;
@@ -99,10 +121,10 @@ void System::tick(float delta) {
             int particle = constraint.value.anchor.particle;
             int anchorParticle = constraint.value.anchor.anchor;
 
-            float x = pos.values[particle];
-            float ax = pos.values[anchorParticle];
-            float y = pos.values[particle + 1];
-            float ay = pos.values[anchorParticle + 1];
+            double x = pos.values[particle];
+            double ax = pos.values[anchorParticle];
+            double y = pos.values[particle + 1];
+            double ay = pos.values[anchorParticle + 1];
 
             MatrixChunk jChunk = gradients.chunks[jChunkIndex];
             jChunk.a = x - ax;

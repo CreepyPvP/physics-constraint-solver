@@ -53,14 +53,14 @@ struct System {
     Vector totalEnergy;
 
     Vector lambda;
-    float* sleSolverBuffer;
-    float* sleBuffer1;
-    float* sleBuffer2;
+    double* sleSolverBuffer;
+    double* sleBuffer1;
+    double* sleBuffer2;
 
     Constraint* constraints;
     int constraintCount;
     int constraintCapacity;
 
     void init();
-    void tick(float delta);
+    void tick(double delta);
 };

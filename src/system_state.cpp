@@ -67,25 +67,6 @@ void System::init() {
     c1.value.anchor.ajtIndex = timeGradients.createChunk(0, 1);
     constraints[1] = c1;
 
-    // equality
-    // Constraint c1;
-    // c1.type = Constraint::Equality;
-    // c1.value.equality.a = 2;
-    // c1.value.equality.b = 0;
-    // c1.value.equality.ajIndex = gradients.createChunk(2, 1);
-    // c1.value.equality.ajtIndex = timeGradients.createChunk(2, 1);
-    // c1.value.equality.bjIndex = gradients.createChunk(0, 1);
-    // c1.value.equality.bjtIndex = timeGradients.createChunk(0, 1);
-    // constraints[1] = c1;
-
-    // Constraint c1;
-    // c1.type = Constraint::UnitCircle;
-    // c1.value.unitCircle.particle = 2;
-    // // 0, 0 => particle 0, constraint 0
-    // c1.value.unitCircle.jIndex = gradients.createChunk(2, 1);
-    // c1.value.unitCircle.jtIndex = timeGradients.createChunk(2, 1);
-    // constraints[1] = c1;
-
     constraintCount = 2;
 }
 
@@ -137,13 +118,13 @@ void System::tick(double delta) {
             gradients.chunks[ajChunkIndex] = ajChunk;
 
             MatrixChunk jtChunk = timeGradients.chunks[jtChunkIndex];
-            jtChunk.a = vel.values[particle];
-            jtChunk.b = vel.values[particle + 1];
+            jtChunk.a = vel.values[particle] - vel.values[anchorParticle];
+            jtChunk.b = vel.values[particle + 1] - vel.values[anchorParticle + 1];
             timeGradients.chunks[jtChunkIndex] = jtChunk;
 
             MatrixChunk ajtChunk = timeGradients.chunks[ajtChunkIndex];
-            ajtChunk.a = vel.values[anchorParticle];
-            ajtChunk.b = vel.values[anchorParticle + 1];
+            ajtChunk.a = vel.values[anchorParticle] - vel.values[particle];
+            ajtChunk.b = vel.values[anchorParticle + 1] - vel.values[particle + 1];
             timeGradients.chunks[ajtChunkIndex] = ajtChunk;
 
             totalEnergy.values[i] = 0.5 * ((x - ax) * (x - ax) + (y - ay) * (y - ay) - 1);

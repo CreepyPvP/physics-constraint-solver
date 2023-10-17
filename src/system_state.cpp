@@ -26,9 +26,9 @@ void System::init() {
     timeGradients.alloc(constraintCapacity * 2);
 
     lambda.alloc(constraintCapacity);
-    sleSolverBuffer = (double*) malloc(sizeof(double) * entityCount * constraintCapacity);
-    sleBuffer1 = (double*) malloc(sizeof(double) * entityCount);
-    sleBuffer2 = (double*) malloc(sizeof(double) * entityCount);
+    sleSolverBuffer = (double*) malloc(sizeof(double) * entityCount * 2 * constraintCapacity);
+    sleBuffer1 = (double*) malloc(sizeof(double) * entityCount * 2);
+    sleBuffer2 = (double*) malloc(sizeof(double) * entityCount * 2);
 
     for (int i = 0; i < forces.length; i += 2) {
         // gravity
